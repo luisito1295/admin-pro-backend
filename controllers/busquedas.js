@@ -1,8 +1,11 @@
+const { response } = require('express');
+
 const Usuario = require('../models/usuario');
 const Medico = require('../models/medico');
 const Hospital = require('../models/hospital');
 
-const getTodo = async(req, res ) => {
+
+const getTodo = async(req, res = response ) => {
 
     const busqueda = req.params.busqueda;
     const regex = new RegExp( busqueda, 'i' );
@@ -22,7 +25,7 @@ const getTodo = async(req, res ) => {
 
 }
 
-const getDocumentosColeccion = async(req, res ) => {
+const getDocumentosColeccion = async(req, res = response ) => {
 
     const tabla    = req.params.tabla;
     const busqueda = req.params.busqueda;
@@ -60,6 +63,7 @@ const getDocumentosColeccion = async(req, res ) => {
     })
 
 }
+
 
 module.exports = {
     getTodo,

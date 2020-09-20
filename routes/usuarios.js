@@ -3,19 +3,15 @@
 */
 const { Router } = require('express');
 const { check } = require('express-validator');
-
-//Middleware
 const { validarCampos } = require('../middlewares/validar-campos');
 
-//Controlador
 const { getUsuarios, crearUsuario, actualizarUsuario, borrarUsuario } = require('../controllers/usuarios');
-
-//Validar token
 const { validarJWT } = require('../middlewares/validar-jwt');
+
 
 const router = Router();
 
-//Rutas
+
 router.get( '/', validarJWT , getUsuarios );
 
 router.post( '/',
@@ -24,7 +20,7 @@ router.post( '/',
         check('password', 'El password es obligatorio').not().isEmpty(),
         check('email', 'El email es obligatorio').isEmail(),
         validarCampos,
-    ],
+    ], 
     crearUsuario 
 );
 

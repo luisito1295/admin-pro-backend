@@ -1,8 +1,7 @@
-#AdminPro - Backend
+# AdminPro - Backend
 
-Recuerde ejecutar 
-...
-npm install 
-..
+Recuerden ejecutar 
 
-para instalar los modulos de Node
+```
+npm install
+```

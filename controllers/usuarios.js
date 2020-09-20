@@ -18,6 +18,7 @@ const getUsuarios = async(req, res) => {
         Usuario.countDocuments()
     ]);
 
+
     res.json({
         ok: true,
         usuarios,
@@ -26,7 +27,7 @@ const getUsuarios = async(req, res) => {
 
 }
 
-const crearUsuario = async(req, res) => {
+const crearUsuario = async(req, res = response) => {
 
     const { email, password } = req.body;
 
@@ -35,33 +36,32 @@ const crearUsuario = async(req, res) => {
         const existeEmail = await Usuario.findOne({ email });
 
         if ( existeEmail ) {
-
             return res.status(400).json({
                 ok: false,
                 msg: 'El correo ya está registrado'
             });
-
-        }else{
-
-            const usuario = new Usuario( req.body );
-    
-            // Encriptar contraseña
-            const salt = bcrypt.genSaltSync();
-            usuario.password = bcrypt.hashSync( password, salt );
-        
-            // Guardar usuario
-            await usuario.save();
-
-            // Generar el TOKEN - JWT
-            //const token = await generarJWT( usuario.id );
-
-            res.json({
-                ok: true,
-                usuario,
-                //token
-            });
-
         }
+
+        const usuario = new Usuario( req.body );
+    
+        // Encriptar contraseña
+        const salt = bcrypt.genSaltSync();
+        usuario.password = bcrypt.hashSync( password, salt );
+    
+    
+        // Guardar usuario
+        await usuario.save();
+
+        // Generar el TOKEN - JWT
+        const token = await generarJWT( usuario.id );
+
+
+        res.json({
+            ok: true,
+            usuario,
+            token
+        });
+
 
     } catch (error) {
         console.log(error);
@@ -74,10 +74,13 @@ const crearUsuario = async(req, res) => {
 
 }
 
-const actualizarUsuario = async (req, res) => {
+
+const actualizarUsuario = async (req, res = response) => {
 
     // TODO: Validar token y comprobar si es el usuario correcto
+
     const uid = req.params.id;
+
 
     try {
 
@@ -91,7 +94,7 @@ const actualizarUsuario = async (req, res) => {
         }
 
         // Actualizaciones
-        const { password, google, email, ...campos } = req.body; //Extraer ciertos campos
+        const { password, google, email, ...campos } = req.body;
 
         if ( usuarioDB.email !== email ) {
 
@@ -102,15 +105,24 @@ const actualizarUsuario = async (req, res) => {
                     msg: 'Ya existe un usuario con ese email'
                 });
             }
-        }else{
+        }
+        
+        if ( !usuarioDB.google ){
             campos.email = email;
-            const usuarioActualizado = await Usuario.findByIdAndUpdate( uid, campos, { new: true } );
-
-            res.json({
-                ok: true,
-                usuario: usuarioActualizado
+        } else if ( usuarioDB.email !== email ) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Usuario de google no pueden cambiar su correo'
             });
-        } 
+        }
+
+        const usuarioActualizado = await Usuario.findByIdAndUpdate( uid, campos, { new: true } );
+
+        res.json({
+            ok: true,
+            usuario: usuarioActualizado
+        });
+
         
     } catch (error) {
         console.log(error);
@@ -156,7 +168,10 @@ const borrarUsuario = async(req, res = response ) => {
 
     }
 
+
 }
+
+
 
 module.exports = {
     getUsuarios,

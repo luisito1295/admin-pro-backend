@@ -1,8 +1,12 @@
+const { response } = require('express');
+
 const Hospital = require('../models/hospital');
 
-const getHospitales = async(req, res) => {
 
-    const hospitales = await Hospital.find().populate('usuario','nombre img');
+const getHospitales = async(req, res = response) => {
+
+    const hospitales = await Hospital.find()
+                                    .populate('usuario','nombre img');
 
     res.json({
         ok: true,
@@ -10,14 +14,18 @@ const getHospitales = async(req, res) => {
     })
 }
 
-const crearHospital = async(req, res) => {
+const crearHospital = async(req, res = response) => {
 
     const uid = req.uid;
-    const hospital = new Hospital({ usuario: uid, ...req.body });
+    const hospital = new Hospital({ 
+        usuario: uid,
+        ...req.body 
+    });
 
     try {
         
         const hospitalDB = await hospital.save();
+        
 
         res.json({
             ok: true,
@@ -31,12 +39,14 @@ const crearHospital = async(req, res) => {
             msg: 'Hable con el administrador'
         })
     }
+    
+
 
 }
 
 const actualizarHospital = async (req, res = response) => {
 
-    const id  = req.params.id; //Id del objecto o documento
+    const id  = req.params.id;
     const uid = req.uid;
 
     try {
@@ -52,7 +62,7 @@ const actualizarHospital = async (req, res = response) => {
 
         const cambiosHospital = {
             ...req.body,
-            //usuario: uid
+            usuario: uid
         }
 
         const hospitalActualizado = await Hospital.findByIdAndUpdate( id, cambiosHospital, { new: true } );
@@ -109,6 +119,8 @@ const borrarHospital = async(req, res = response) => {
         })
     }
 }
+
+
 
 module.exports = {
     getHospitales,

@@ -11,6 +11,7 @@ const borrarImagen = ( path ) => {
     }
 }
 
+
 const actualizarImagen = async(tipo, id, nombreArchivo) => {
 
     let pathViejo = '';
@@ -66,7 +67,10 @@ const actualizarImagen = async(tipo, id, nombreArchivo) => {
         break;
     }
 
+
 }
+
+
 
 module.exports = { 
     actualizarImagen
